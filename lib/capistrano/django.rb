@@ -86,7 +86,7 @@ namespace :django do
     invoke 'django:compilemessages'
     invoke 'django:collectstatic'
     invoke 'django:symlink_settings'
-    if !fetch(:nginx)
+    if !fetch(:nginx) and !fetch(:gunicorn)
       invoke 'django:symlink_wsgi'
     end
     invoke 'django:migrate'
@@ -183,7 +183,7 @@ end
 
 namespace :supervisor do
 
-  # TODO
+  # TODO (cf. github issues)
   # desc "Update Supervisor config"
   # task :update_supervisor_config do
   #   "#{release_path}/virtualenv/bin/envdir #{release_path}/envdir/#{fetch(:stage)} /opt/chef/embedded/bin/erb #{release_path}/conf.d/supervisor/%s.conf.erb > /etc/supervisor/conf.d/%s.conf; % (SUPERVISOR_APP_NAME,SUPERVISOR_APP_NAME)"
