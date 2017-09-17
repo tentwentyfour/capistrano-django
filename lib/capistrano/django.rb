@@ -58,7 +58,6 @@ namespace :python do
 end
 
 namespace :flask do
-
   task :setup do
     on roles(:web) do |h|
       execute :ln, "-s", "#{release_path}/settings/#{fetch(:settings_file)}.py", "#{release_path}/settings/deployed.py"
@@ -73,7 +72,7 @@ namespace :django do
   def django(args, flags="", run_on=:all)
     on roles(run_on) do |h|
       manage_path = File.join(release_path, fetch(:django_project_dir) || '', 'manage.py')
-      execute "#{release_path}/virtualenv/bin/python", "#{manage_path}", "#{fetch(:django_settings)}", "#{args}", "#{flags}"
+      execute "#{release_path}/virtualenv/bin/python", "#{manage_path}", "#{args}", "#{flags}"
     end
   end
 
@@ -184,16 +183,16 @@ end
 
 namespace :supervisor do
 
-  desc "Update Supervisor config"
-  task :update_supervisor_config do
-    "#{release_path}/virtualenv/bin/envdir #{release_path}/envdir/#{fetch(:stage)} /opt/chef/embedded/bin/erb #{release_path}/conf.d/supervisor/%s.conf.erb > /etc/supervisor/conf.d/%s.conf; % (SUPERVISOR_APP_NAME,SUPERVISOR_APP_NAME)"
-  end
-
+  # TODO
+  # desc "Update Supervisor config"
+  # task :update_supervisor_config do
+  #   "#{release_path}/virtualenv/bin/envdir #{release_path}/envdir/#{fetch(:stage)} /opt/chef/embedded/bin/erb #{release_path}/conf.d/supervisor/%s.conf.erb > /etc/supervisor/conf.d/%s.conf; % (SUPERVISOR_APP_NAME,SUPERVISOR_APP_NAME)"
+  # end
 
   desc "Supervisor reload"
   task :reload do
-    execute :sudo, :supervisorctl :reread
-    execute :sudo, :supervisorctl :update
+    execute :sudo, :supervisorctl, :reread
+    execute :sudo, :supervisorctl, :update
   end
 
   desc "Supervisor stop"
