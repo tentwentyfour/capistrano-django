@@ -8,7 +8,7 @@ namespace :deploy do
       invoke 'deploy:nginx_restart'
     else
       on roles(:web) do |h|
-        execute "sudo apache2ctl graceful"
+        execute :sudo, :apache2ctl, :graceful
       end
     end
   end
@@ -38,8 +38,8 @@ namespace :python do
   desc "Create a python virtualenv"
   task :create_virtualenv do
     on roles(:all) do |h|
-      execute "virtualenv #{virtualenv_path}"
-      execute "#{virtualenv_path}/bin/pip install -r #{release_path}/#{fetch(:pip_requirements)}"
+      execute :virtualenv, "#{virtualenv_path}"
+      execute "#{virtualenv_path}/bin/pip", :install, "-r", "#{release_path}/#{fetch(:pip_requirements)}"
       if fetch(:shared_virtualenv)
         execute :ln, "-s", virtualenv_path, File.join(release_path, 'virtualenv')
       end
@@ -61,8 +61,8 @@ namespace :flask do
 
   task :setup do
     on roles(:web) do |h|
-      execute "ln -s #{release_path}/settings/#{fetch(:settings_file)}.py #{release_path}/settings/deployed.py"
-      execute "ln -sf #{release_path}/wsgi/wsgi.py #{release_path}/wsgi/live.wsgi"
+      execute :ln, "-s", "#{release_path}/settings/#{fetch(:settings_file)}.py", "#{release_path}/settings/deployed.py"
+      execute :ln, "-sf", "#{release_path}/wsgi/wsgi.py", "#{release_path}/wsgi/live.wsgi"
     end
   end
 
@@ -192,8 +192,8 @@ namespace :supervisor do
 
   desc "Supervisor reload"
   task :reload do
-    execute 'sudo supervisorctl reread'
-    execute 'sudo supervisorctl update'
+    execute :sudo, :supervisorctl :reread
+    execute :sudo, :supervisorctl :update
   end
 
   desc "Supervisor stop"
@@ -218,7 +218,7 @@ namespace :nodejs do
     on roles(:web) do
       path = fetch(:npm_path) ? File.join(release_path, fetch(:npm_path)) : release_path
       within path do
-        execute 'npm', 'install', fetch(:npm_install_production, '--production')
+        execute :npm, :install, fetch(:npm_install_production, '--production')
       end
     end
   end
