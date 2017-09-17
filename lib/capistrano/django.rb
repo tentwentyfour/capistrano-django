@@ -182,6 +182,35 @@ namespace :django do
   end
 end
 
+namespace :supervisor do
+
+  desc "Update Supervisor config"
+  task :update_supervisor_config do
+    "#{release_path}/virtualenv/bin/envdir #{release_path}/envdir/#{fetch(:stage)} /opt/chef/embedded/bin/erb #{release_path}/conf.d/supervisor/%s.conf.erb > /etc/supervisor/conf.d/%s.conf; % (SUPERVISOR_APP_NAME,SUPERVISOR_APP_NAME)"
+  end
+
+
+  desc "Supervisor reload"
+  task :reload do
+    execute 'sudo supervisorctl reread'
+    execute 'sudo supervisorctl update'
+  end
+
+  desc "Supervisor stop"
+  task :stop do
+    on roles(:all) do
+      execute :sudo, :supervisorctl, "stop #{fetch(:supervisor_process_name)}"
+    end
+  end
+
+  desc "Supervisor start"
+  task :start do
+    on roles(:all) do
+      execute :sudo, :supervisorctl, "start #{fetch(:supervisor_process_name)}"
+    end
+  end
+end
+
 namespace :nodejs do
 
   desc 'Install node modules'
