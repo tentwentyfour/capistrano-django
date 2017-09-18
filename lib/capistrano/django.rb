@@ -211,15 +211,14 @@ namespace :supervisor do
   desc "Supervisor start"
   task :start do
     on roles(:all) do
-      execute :sudo, :supervisorctl, "start #{fetch(:supervisor_process_name)}"
+      execute :sudo, :supervisorctl, :start, "#{fetch(:supervisor_process_name)}"
     end
   end
 
   desc "Supervisor restart"
   task :restart do
     on roles(:all) do
-      invoke :stop
-      invoke :start
+      execute :sudo, :supervisorctl, :restart, "#{fetch(:supervisor_process_name)}"
     end
   end
 end
