@@ -6,6 +6,8 @@ namespace :deploy do
   task :restart do
     if fetch(:nginx)
       invoke 'deploy:nginx_restart'
+    elsif fetch(:supervisor)
+      invoke 'supervisor:restart'
     else
       on roles(:web) do |h|
         execute :sudo, :apache2ctl, :graceful
@@ -206,6 +208,14 @@ namespace :supervisor do
   task :start do
     on roles(:all) do
       execute :sudo, :supervisorctl, "start #{fetch(:supervisor_process_name)}"
+    end
+  end
+
+  desc "Supervisor restart"
+  task :restart do
+    on roles(:all) do
+      invoke :stop
+      invoke :start
     end
   end
 end
