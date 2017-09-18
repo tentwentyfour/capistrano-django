@@ -183,6 +183,8 @@ namespace :django do
   end
 end
 
+# after 'supervisor:update_config', 'supervisor:reload'
+
 namespace :supervisor do
 
   # TODO (cf. github issues)
@@ -193,8 +195,10 @@ namespace :supervisor do
 
   desc "Supervisor reload"
   task :reload do
-    execute :sudo, :supervisorctl, :reread
-    execute :sudo, :supervisorctl, :update
+    on roles(:all) do
+      execute :sudo, :supervisorctl, :reread
+      execute :sudo, :supervisorctl, :update
+    end
   end
 
   desc "Supervisor stop"
